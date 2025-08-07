@@ -1,0 +1,1 @@
+Nossas diretrizes de arquitetura enfatizam a importância da resiliência do sistema. Todos os serviços críticos devem ser projetados para tolerar falhas, com mecanismos de fallback e estratégias de recuperação de desastres em vigor. A latência deve ser minimizada e o sistema deve ser capaz de lidar com picos de carga sem degradação do desempenho.

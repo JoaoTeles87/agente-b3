@@ -1,0 +1,1 @@
+A segurança é fundamental em nossa organização. Todas as comunicações entre serviços devem ser criptografadas usando TLS. O acesso aos dados do usuário deve ser estritamente controlado e auditado. As senhas devem ser armazenadas em hash e salgadas usando um algoritmo forte.
