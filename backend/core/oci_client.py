@@ -19,7 +19,7 @@ def get_llama2_completion(prompt: str) -> dict:
     
     try:
         config = oci.config.from_file(profile_name=CONFIG_PROFILE)
-        generative_ai_inference_client = oci.generative_ai_inference.GenerativeAiInferenceClient(config=config, service_endpoint=ENDPOINT)
+        generative_ai_inference_client = oci.generative_ai_inference.GenerativeAiInferenceClient(config=config, service_endpoint=ENDPOINT, timeout=600)
         
         # Constructing the chat request
         content = oci.generative_ai_inference.models.TextContent()

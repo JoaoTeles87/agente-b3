@@ -2,6 +2,7 @@ import logging
 import chromadb
 from chromadb.utils import embedding_functions
 from core.oci_client import get_llama2_completion
+from typing import List, Dict
 
 # --- Constants ---
 CHROMA_DB_PATH = "chroma_db"
@@ -14,13 +15,13 @@ collection = client.get_or_create_collection(
     embedding_function=embedding_function,
 )
 
-def query_rag(query: str, n_results: int = 3) -> str:
+def query_rag(query: str, chat_history: List[Dict[str, str]] = None, n_results: int = 3) -> str:
     """
     Queries the ChromaDB for relevant documents and generates a response using LLaMA2.
     """
     logging.info(f"Querying RAG with: {query}")
 
-    # 1. Retrieve relevant documents from ChromaDB
+    # 1. Retrieve relevant documents from ChromaDB using only the current query
     results = collection.query(
         query_texts=[query],
         n_results=n_results
@@ -30,14 +31,23 @@ def query_rag(query: str, n_results: int = 3) -> str:
 
     # 2. Construct the prompt for LLaMA2
     context = "\n".join(documents)
-    prompt = f"""Use the following context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
-Context:
+    history_str = ""
+    if chat_history:
+        for message in chat_history:
+            history_str += f"{message.role}: {message.content}\n"
+
+    prompt = f"""Você é um assistente de IA especializado em arquitetura de software. Responda à pergunta em português, utilizando apenas o contexto fornecido. Se a pergunta não for sobre arquitetura de software ou se você não souber a resposta com base no contexto, diga que não tem informações sobre o assunto. Não tente inventar uma resposta.
+
+Contexto:
 {context}
 
-Question: {query}
+Histórico da Conversa:
+{history_str}
 
-Answer:"""
+Pergunta: {query}
+
+Resposta:"""
     logging.debug(f"Generated prompt: {prompt}")
 
     # 3. Get the completion from the OCI LLaMA2 model

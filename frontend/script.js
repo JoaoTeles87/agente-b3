@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
 
+    let chatHistory = []; // Initialize chat history
+
     sendButton.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -22,10 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ query }),
+            body: JSON.stringify({ query, chat_history: chatHistory }), // Send chat history
         })
         .then(response => response.json())
         .then(data => {
+            chatHistory = data.chat_history; // Update chat history from backend
             appendMessage(data.response, 'agent');
         })
         .catch(error => {
@@ -41,19 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const paragraph = document.createElement('p');
         paragraph.textContent = text;
         messageElement.appendChild(paragraph);
-
-        if (sender === 'agent') {
-            const refineButton = document.createElement('button');
-            refineButton.textContent = 'Refine';
-            refineButton.classList.add('refine-button');
-            refineButton.addEventListener('click', () => {
-                const refinedQuery = prompt('How would you like to refine the answer?', text);
-                if (refinedQuery) {
-                    sendMessage(refinedQuery);
-                }
-            });
-            messageElement.appendChild(refineButton);
-        }
 
         chatWindow.appendChild(messageElement);
         chatWindow.scrollTop = chatWindow.scrollHeight;
