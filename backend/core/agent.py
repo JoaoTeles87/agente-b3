@@ -1,3 +1,5 @@
+from backend.core.rag import query_rag
+
 class Agent:
     def run(self, query: str) -> str:
-        return f"This is a mock response to your query: {query}"
+        return query_rag(query)
