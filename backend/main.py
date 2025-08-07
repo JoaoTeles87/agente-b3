@@ -1,7 +1,7 @@
 import logging
 from fastapi import FastAPI
 from pydantic import BaseModel
-from backend.core.agent import Agent
+from core.agent import Agent
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

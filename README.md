@@ -1,62 +1,69 @@
-# B3 AI Agent
+# Agente de IA para B3 com RAG
 
-This project is an AI agent designed to interact with B3's internal APIs and Jira. The agent is built with a backend powered by FastAPI and a lightweight frontend using Streamlit.
+Este projeto é um agente de IA que utiliza a técnica de Geração Aumentada por Recuperação (RAG) para responder a perguntas com base em uma base de conhecimento de documentos. O agente é construído com um backend em FastAPI, utiliza o ChromaDB como banco de dados vetorial e se integra com os modelos de linguagem da OCI (Oracle Cloud Infrastructure) Generative AI.
 
-## Architecture
+## Arquitetura
 
-The project is divided into a backend and a frontend:
+O fluxo do agente segue o padrão RAG:
 
-- **Backend**: A FastAPI application that exposes an API for the AI agent. It uses LangChain and CrewAI to orchestrate the agent's logic and interact with external services like Jira and B3's internal APIs.
-- **Frontend**: A Streamlit application that provides a simple and interactive user interface for the agent.
+1.  **Consulta do Usuário**: O usuário envia uma pergunta através da API.
+2.  **Recuperação de Documentos**: O sistema busca por documentos relevantes na base de dados vetorial (ChromaDB) que correspondam à consulta do usuário.
+3.  **Construção do Prompt**: Os documentos recuperados são inseridos como contexto em um prompt, juntamente com a pergunta original do usuário.
+4.  **Geração da Resposta**: O prompt enriquecido é enviado para o modelo de linguagem (LLaMA 2) na OCI Generative AI, que gera uma resposta fundamentada nos documentos fornecidos.
 
-## Getting Started
+## Como Começar
 
-### Prerequisites
+### Pré-requisitos
 
 - Python 3.9+
-- Poetry
+- Pip
+- Uma conta na Oracle Cloud Infrastructure (OCI) com as credenciais da API configuradas corretamente no seu ambiente local (normalmente em `~/.oci/config`).
 
-### Installation
+### Instalação
 
-1. Clone the repository:
+1. Clone o repositório:
    ```bash
-   git clone https://github.com/your-username/b3-ai-agent.git
-   cd b3-ai-agent
+   git clone https://github.com/JoaoTeles87/agente-b3.git
+   cd agente-b3
    ```
 
-2. Install the dependencies:
+2. Instale as dependências:
    ```bash
-   poetry install
+   pip install -r requirements.txt
    ```
 
-### Running the Application
+3. Configure as variáveis de ambiente. Crie um arquivo chamado `.env` na raiz do projeto e adicione as seguintes variáveis:
+   ```dotenv
+   COMPARTMENT_ID="seu-compartment-ocid"
+   ENDPOINT="seu-service-endpoint"
+   LLAMA2_MODEL_OCID="seu-modelo-ocid"
+   ```
+   Substitua os valores pelos dados correspondentes da sua conta OCI.
 
-1. Start the backend server:
+## Executando a Aplicação
+
+1. Inicie o servidor backend:
    ```bash
-   poetry run uvicorn backend.main:app --reload
+   uvicorn backend.main:app --reload
    ```
 
-2. In a separate terminal, start the frontend application:
-   ```bash
-   poetry run streamlit run frontend/app.py
-   ```
+2. A API estará disponível em `http://127.0.0.1:8000`. Você pode interagir com ela através da documentação do Swagger UI em `http://127.0.0.1:8000/docs`.
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 .
 ├── backend
-│   ├── __init__.py
 │   ├── main.py
 │   └── core
-│       ├── __init__.py
-│       └── agent.py
-├── frontend
-│   └── app.py
-├── tests
-│   ├── __init__.py
-│   └── test_agent.py
+│       ├── agent.py
+│       ├── oci_client.py
+│       └── rag.py
+├── documents
+│   └── (coloque seus documentos aqui)
+├── chroma_db
+│   └── (banco de dados vetorial)
 ├── .gitignore
-├── LICENSE
+├── requirements.txt
 └── README.md
 ```

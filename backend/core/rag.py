@@ -1,7 +1,7 @@
 import logging
 import chromadb
 from chromadb.utils import embedding_functions
-from backend.core.oci_client import get_llama2_completion
+from core.oci_client import get_llama2_completion
 
 # --- Constants ---
 CHROMA_DB_PATH = "chroma_db"
